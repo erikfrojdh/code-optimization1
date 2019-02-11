@@ -1,57 +1,56 @@
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <atomic>
-#include <vector>
 #include "LimitedDataQueue.h"
 #include "ThreadPool.h"
-
+#include "Timer.h"
+#include <atomic>
+#include <chrono>
 #include <cstdio>
+#include <iostream>
+#include <numeric>
+#include <thread>
+#include <vector>
 
-void consumer(LimitedDataQueue<int> *qq, int id, std::atomic<bool>& done)
-{
+using queue_type = std::vector<int>;
+
+void consumer(LimitedDataQueue<queue_type> *qq, int id) {
     std::cout << "Consumer start\n";
-    while (!done)
-    {
-        int a = 0;
-        qq->wait_and_pop(a);
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        printf("Thread: %d got %d\n", id, a);
+    while (qq->producerNotFinished()) {
+        queue_type a;
+        auto b = qq->wait_and_pop(a);
+        if (b) {
+            auto sum = std::accumulate(a.begin(), a.end(), 0);
+            printf("Thread %d: sum %d\n", id, sum);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
     }
+    printf("Thread: %d is done\n", id);
     return;
 }
 
-int main()
-{
-
-    // auto pool = ThreadPool<int>(5);
-
-    // std::cout << "Done\n";
-    // std::cout << "Hej\n";
-
-    std::atomic<bool> shutdown = false;
-    auto q = LimitedDataQueue<int>();
-    q.set_capacity(3);
+int main() {
 
 
-    // // //Using a vector for thread pool
-    std::vector<std::thread> tvec;
-    for (int i=0; i!=4; ++i){
-        tvec.push_back(std::thread(consumer, &q, i, std::ref(shutdown)));
+    sls::Timer t;
+    auto q = LimitedDataQueue<queue_type>(5);
+
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i != 2; ++i) {
+        threads.push_back(std::thread(consumer, &q, i));
     }
 
-
-    for (int i = 0; i != 10; ++i)
-    {
-        q.wait_and_push(i);
+    for (int i = 1; i != 21; ++i) {
+        std::vector<int> values(i);
+        for (int j = 0; j != values.size(); ++j) {
+            values[j] = j;
+        }
+        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        q.wait_and_push(values);
     }
+    q.setProducerFinished(true);
 
-    // shutdown = true;
-    // // q.push(99);
-    // // q.push(99);
-    for(auto& t:tvec){
+
+    for (auto &t : threads) {
         t.join();
     }
-
-    // std::cout << "size: " << q.size() << "\n";
+    t.print_elapsed();
 }
