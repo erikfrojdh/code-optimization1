@@ -43,3 +43,8 @@ add_executable(a main.cpp)
 target_link_libraries(a
                         PRIVATE project_options
                         Threads::Threads)
+
+add_executable(test 
+                tests/test-main.cpp 
+                tests/test-LimitedDataQueue.cpp)
+target_link_libraries(test project_options)
