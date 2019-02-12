@@ -4,7 +4,7 @@
 #include <mutex>
 
 template <typename T, size_t count>
-class Reader {
+class ThreadSafeReader {
   private:
     mutable std::mutex m_;
     int num_reads_ = 0;

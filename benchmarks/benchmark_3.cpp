@@ -4,7 +4,7 @@
 #include "TROOT.h"
 #include "Timer.h"
 #include "histogram.h"
-#include "Reader.h"
+#include "ThreadSafeReader.h"
 
 #include <chrono>
 #include <iostream>
@@ -18,7 +18,7 @@ constexpr int n_items = 1'000'000'000;
 constexpr int n_iter = 1'000;
 constexpr int buffer_size = n_items / n_iter;
 
-void fill_histogram(TH2 *h, Reader<Hit, buffer_size> *rr, int id) {
+void fill_histogram(TH2 *h, ThreadSafeReader<Hit, buffer_size> *rr, int id) {
     printf("fill_histogram: %d\n", id);
     int counter = 0;
     std::vector<Hit> hits(buffer_size);
@@ -40,7 +40,7 @@ int main() {
 
     sls::Timer timer;
 
-    Reader<Hit, buffer_size> r;
+    ThreadSafeReader<Hit, buffer_size> r;
     r.open("/home/l_frojdh/tmp/Module77_ST_Pb75keV_-wCM-dHC.clust");
 
     std::vector<std::thread> threads;

@@ -81,14 +81,14 @@ double func(LimitedDataQueue<double> *qq) {
 // };
 
 template <typename T>
-class Reader {
+class ThreadSafeReader {
   private:
     mutable std::mutex m_;
     size_t count_;
     int value_ = 0;
 
   public:
-    Reader(size_t count) : count_(count) {}
+    ThreadSafeReader(size_t count) : count_(count) {}
     size_t read(T *dest) {
         std::unique_lock<std::mutex> lock(m_);
         std::vector<T> data(count_, value_++);
@@ -104,7 +104,7 @@ void print(T containter) {
     }
 }
 
-void process(Reader<int> *rr, int id) {
+void process(ThreadSafeReader<int> *rr, int id) {
     std::vector<int> vec(5);
     for (int i = 0; i != 10; ++i) {
         rr->read(vec.data());
@@ -116,7 +116,7 @@ void process(Reader<int> *rr, int id) {
 
 int main() {
 
-    Reader<int> r{5};
+    ThreadSafeReader<int> r{5};
     std::vector<std::thread> threads;
     for (int i = 0; i != 4; ++i) {
         threads.push_back(std::thread(process, &r, i));
