@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 3.10)
 project(test VERSION 0.0.1 LANGUAGES CXX)
 
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
 add_library(project_warnings INTERFACE)
+
+# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native" )
 
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=thread")
 set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=thread")
@@ -36,6 +43,10 @@ INTERFACE -Wall
           -Wdouble-promotion # warn if float is implicit promoted to double
           -Wformat=2 # warn on security issues around functions that format
                      # output (ie printf)
+           -03
+           -march=native
+           -mtune=native
+
 )
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -47,4 +58,7 @@ target_link_libraries(a
 add_executable(test 
                 tests/test-main.cpp 
                 tests/test-LimitedDataQueue.cpp)
-target_link_libraries(test project_options)
+target_link_libraries(test project_options Threads::Threads)
+
+
+add_subdirectory(benchmarks)

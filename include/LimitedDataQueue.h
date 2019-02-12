@@ -19,7 +19,7 @@ class LimitedDataQueue {
     LimitedDataQueue(const LimitedDataQueue &other) = delete;
 
   public:
-    LimitedDataQueue(){}
+    LimitedDataQueue() {}
     LimitedDataQueue(size_t capacity) : capacity_(capacity) {}
 
     bool producerNotFinished() const {
@@ -55,21 +55,30 @@ class LimitedDataQueue {
         return queue_.size();
     }
 
-    bool try_push(T item){
+    bool try_push(T item) {
         std::unique_lock<std::mutex> lock(m_);
-        if (queue_.size()< capacity_){
+        if (queue_.size() < capacity_) {
             queue_.push(std::move(item));
             data_available_.notify_one();
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
+    bool try_pop(T &popped_item) {
+        std::lock_guard<std::mutex> lock(m_);
+        if (!queue_.empty()) {
+            popped_item = std::move(queue_.front());
+            queue_.pop();
+            space_available_.notify_one();
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-    /*blocking push  try to push data on to the queue
-    if full wait for space to be available*/
-    void wait_and_push(T item) {
+    void wait_push(T item) {
         std::unique_lock<std::mutex> lock(m_);
         while (queue_.size() > capacity_) {
             space_available_.wait(lock);
@@ -78,11 +87,7 @@ class LimitedDataQueue {
         data_available_.notify_one();
     }
 
-    /*blocking_pop, try to pop an item from the 
-    queue and if the queue is empty wait for new data
-    or producerFinished. Returns true if successful
-    false if the queue was empty and producerFinished*/
-    bool wait_and_pop(T &popped_item) {
+    bool wait_pop(T &popped_item) {
         std::unique_lock<std::mutex> lock(m_);
         while (queue_.empty() && !producer_finished_) {
             data_available_.wait(lock);
@@ -91,7 +96,7 @@ class LimitedDataQueue {
         if (!queue_.empty()) {
             popped_item = std::move(queue_.front());
             queue_.pop();
-            space_available_.notify_one(); 
+            space_available_.notify_one();
             return true;
         }
         return false;

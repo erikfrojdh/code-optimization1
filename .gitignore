@@ -2,6 +2,7 @@ build
 
 # Prerequisites
 *.d
+*.pcm
 
 # Compiled Object files
 *.slo
