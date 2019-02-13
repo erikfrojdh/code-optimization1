@@ -2,6 +2,7 @@
 
 #include <cstdio>
 #include <mutex>
+#include <stdexcept>
 
 template <typename T, size_t count>
 class ThreadSafeReader {
@@ -11,14 +12,16 @@ class ThreadSafeReader {
     FILE *pFile_;
 
   public:
-    FILE *open(const std::string &fname) {
-        pFile_ = std::fopen(fname.c_str(), "rb");
-        return pFile_;
+    ThreadSafeReader(const std::string &fname) : pFile_(std::fopen(fname.c_str(), "rb")) {
+        if (!pFile_) {
+            throw std::runtime_error("File not found\n");
+        }
     }
 
     void close() {
         if (pFile_) {
             std::fclose(pFile_);
+            pFile_ = nullptr;
         }
     }
 

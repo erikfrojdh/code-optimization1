@@ -21,13 +21,13 @@ set_property(TARGET ROOT::Flags_CXX PROPERTY
 include_directories(../include)
 
 add_executable(b0 benchmark_0.cpp)
-target_link_libraries(b0 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options)
+target_link_libraries(b0 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options project_warnings)
 
 add_executable(b1 benchmark_1.cpp)
-target_link_libraries(b1 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options)
+target_link_libraries(b1 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options project_warnings)
 
 add_executable(b2 benchmark_2.cpp)
-target_link_libraries(b2 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options)
+target_link_libraries(b2 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options project_warnings fmt::fmt)
 
 add_executable(b3 benchmark_3.cpp)
-target_link_libraries(b3 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options)
+target_link_libraries(b3 PUBLIC ROOT::Hist ROOT::Flags_CXX project_options project_warnings fmt::fmt)

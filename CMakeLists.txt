@@ -10,7 +10,9 @@ endif()
 add_library(project_options INTERFACE)
 add_library(project_warnings INTERFACE)
 
-# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -mtune=native" )
+add_subdirectory(fmt-5.3.0)
+
+# set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native" )
 
 set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=thread")
 set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=thread")
@@ -20,11 +22,14 @@ set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-point
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-target_compile_features(project_options INTERFACE cxx_std_17 )
+target_compile_features(project_options 
+INTERFACE cxx_std_17
+
+ )
 target_include_directories(project_options INTERFACE include)
 target_compile_options(project_warnings
 INTERFACE -Wall
-          -Werror # treat all warnings as errors
+          #-Werror # treat all warnings as errors
           -Wextra # reasonable and standard
           -Wshadow # warn the user if a variable declaration shadows one
                    # from a parent context
@@ -43,10 +48,9 @@ INTERFACE -Wall
           -Wdouble-promotion # warn if float is implicit promoted to double
           -Wformat=2 # warn on security issues around functions that format
                      # output (ie printf)
-           -03
-           -march=native
-           -mtune=native
-
+          -O3
+          -march=native
+          -mtune=native
 )
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)

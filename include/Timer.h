@@ -34,5 +34,5 @@ class Timer {
 };
 
 
-}; //namespace sls
+} //namespace sls
 #endif // TIMER_H

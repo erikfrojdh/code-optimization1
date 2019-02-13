@@ -116,16 +116,18 @@ void process(ThreadSafeReader<int> *rr, int id) {
 
 int main() {
 
-    ThreadSafeReader<int> r{5};
-    std::vector<std::thread> threads;
-    for (int i = 0; i != 4; ++i) {
-        threads.push_back(std::thread(process, &r, i));
-    }
+
+    auto l = [](){};
+    // ThreadSafeReader<int> r{5};
+    // std::vector<std::thread> threads;
+    // for (int i = 0; i != 4; ++i) {
+    //     threads.push_back(std::thread(process, &r, i));
+    // }
 
 
-    for (auto &t : threads) {
-        t.join();
-    }
+    // for (auto &t : threads) {
+    //     t.join();
+    // }
     // size_t max_size = 10;
     // auto q = LimitedDataQueue<double>{max_size};
 
