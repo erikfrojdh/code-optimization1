@@ -30,7 +30,7 @@ int main() {
             // }
         }
         auto duration = timer.elapsed_s();
-        auto throughput  =  static_cast<double>(n_items)*sizeof(Hit)/duration/(1024.*1024.);
+        auto throughput = static_cast<double>(n_items) * sizeof(Hit) / duration / (1024. * 1024.);
         printf("Duration: %.2f s processed %.2f MB/s\n", duration, throughput);
         fclose(pFile);
     } else {
@@ -45,3 +45,4 @@ int main() {
     pixel->Write();
     f->Close();
 }
+

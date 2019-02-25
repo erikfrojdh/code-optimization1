@@ -24,7 +24,7 @@ void benchmark_0() {
         auto hit = single_photon_hit();
         for (int i = 0; i != n_items; ++i) {
             hit.read(pFile);
-            // th2->Fill(hit.x * 256 + hit.y, hit.tot);
+            th2->Fill(hit.x * 256 + hit.y, hit.tot);
         }
         double duration = timer.elapsed_s();
         double throughput = (double)n_items * 98. / duration / (1024. * 1024.);
